@@ -1,9 +1,12 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import sys
 import argparse
 import re
-import urllib, urllib2
+import urllib
+import urllib.request
+import urllib.parse
+import urllib.error
 import time
 from collections import namedtuple
 
@@ -85,7 +88,7 @@ def audio_extract(input_text='',args=None):
     for idx, val in enumerate(combined_text):
         mp3url = "http://translate.google.com/translate_tts?tl=%s&q=%s&total=%s&idx=%s" % (
             args.language,
-            urllib.quote(val),
+            urllib.parse.quote(val),
             len(combined_text),
             idx)
         headers = {"Host": "translate.google.com",
@@ -94,15 +97,15 @@ def audio_extract(input_text='',args=None):
                                  "AppleWebKit/535.19 (KHTML, like Gecko) "
                                  "Chrome/18.0.1025.163 Safari/535.19"
         }
-        req = urllib2.Request(mp3url, '', headers)
+        req = urllib.request.Request(mp3url,None, headers)
         sys.stdout.write('.')
         sys.stdout.flush()
         if len(val) > 0:
             try:
-                response = urllib2.urlopen(req)
+                response = urllib.request.urlopen(req)
                 args.output.write(response.read())
                 time.sleep(.5)
-            except urllib2.URLError as e:
+            except urllib.error.URLError as e:
                 print ('%s' % e)
     args.output.close()
     print('Saved MP3 to %s' % args.output.name)

@@ -1,9 +1,14 @@
 #!/usr/bin/python3
 # vocab HSK anki
 # pipeline to make my own hsk anki cards
-
+import urllib
+import urllib.request
+import urllib.parse
+import urllib.error
+import time
 import pymysql
-import GoogleTTS
+from bs4 import BeautifulSoup
+# import GoogleTTS
 
 # create sql db of all HSK words with hanzi, pinyin, chinese from this: https://github.com/bachhuberdesign/chinese-vocabulary-database/blob/master/hsk-wordlist.sql
 # DONE
@@ -31,8 +36,19 @@ try:
 
         # Print results
         for row in rows:
-            GoogleTTS.audio_extract(input_text=row.simplified, args = {'language':'zh-CN','output':'audio/' + str(row.id) + '.mp3'})
-finally:
+            time.sleep(10)
+            # GoogleTTS.audio_extract(input_text=row.get('simplified'), args = {'language':'zh-CN','output':'audio/' + str(row.get('id')) + '.mp3'})
+            hanzi = row.get('simplified');
+            mp3url = 'https://chinese.yabla.com/chinese-english-pinyin-dictionary.php?define=' + urllib.parse.quote(hanzi,encoding='UTF-8')
+            u2 = urllib.request.urlopen(mp3url)
+            mybytes = u2.read()
+            mystr = mybytes.decode("utf8")
+            u2.close()
+            soup = BeautifulSoup(mystr, 'html.parser')
+            alli = soup.find_all('i',class_='word_audio fa fa-volume-up')
+            audio_url = alli[0]['data-audio_url']
+            urllib.request.urlretrieve(audio_url,'audio/' + str(row.get('id')) + '.mp3')
+finally:    
     conn.close()
 
 
