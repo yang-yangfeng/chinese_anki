@@ -7,13 +7,24 @@ with open("Mandarin_ Vocabulary.txt", "r") as anki_txt:
 
 matches = re.findall(CARD_REGEX, file_string)
 
-NEW_CARD_TEMPLATE = '"{}\n{}\n{}\n{}"\t"{}{}"\n'
+NEW_CARD_TEMPLATE = '{}\t"{}\n{}\n{}\n{}"\t"{}{}"\t{}\n'
+
+# Load tags
+id_to_tags = {}
+with open("Mandarin_Vocabulary_Notes_Clean.txt") as notes:
+    for line in notes:
+        # Ignore headers
+        if not line.startswith("#"):
+            id_ = int(line.split("\t", 1)[0])
+            tags = line.rsplit("\t", 1)[-1]
+            id_to_tags[id_] = tags
 
 with open("Mandarin_Vocabulary_fixed.txt", "w") as new_anki:
     # Write headers
-    new_anki.write("#separator:tab\n#html:true\n")
+    new_anki.write("#separator:tab\n#html:true\n#guid column:1\n#tags column:4\n")
 
-    for match in matches:
+    for i, match in enumerate(matches):
         hanzi, front_font, back_font, pinyin, english, mp3 = match
-        new_card = NEW_CARD_TEMPLATE.format(hanzi, front_font, pinyin, mp3, back_font, english)
+        id_ = i+1
+        new_card = NEW_CARD_TEMPLATE.format(id_, hanzi, front_font, pinyin, mp3, back_font, english, id_to_tags[id_])
         new_anki.write(new_card)
