@@ -7,7 +7,7 @@ with open("Mandarin_ Vocabulary.txt", "r") as anki_txt:
 
 matches = re.findall(CARD_REGEX, file_string)
 
-NEW_CARD_TEMPLATE = '"{}\n{}\n{}"\t"{}{}"\n'
+NEW_CARD_TEMPLATE = '"{}\n{}\n{}\n{}"\t"{}{}"\n'
 
 with open("Mandarin_Vocabulary_fixed.txt", "w") as new_anki:
     # Write headers
